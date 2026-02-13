@@ -3,21 +3,20 @@ import Layout from './components/Layout';
 import TaskInput from './components/TaskInput';
 import TaskList from './components/TaskList';
 import Notes from './components/Notes';
-import { triggerCelebration } from './lib/celebration'; // Corrected import path
+import { triggerCelebration } from './lib/celebration';
 import { CheckCircle2, List, StickyNote } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 function App() {
-  // Initialize tasks from localStorage or empty array
+
   const [tasks, setTasks] = useState(() => {
-    // Clear old tasks that might have 'time' instead of 'duration' to avoid errors
-    // In a real app we might migrate data, but for now we reset.
+
     const saved = localStorage.getItem('tasks');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
         if (parsed.length > 0 && !parsed[0].duration) {
-          return []; // Schema changed, reset
+          return [];
         }
         return parsed;
       } catch (e) {
@@ -27,14 +26,13 @@ function App() {
     return [];
   });
 
-  const [view, setView] = useState('list'); // 'list' or 'timetable'
+  const [view, setView] = useState('list');
 
-  // Save to localStorage whenever tasks change
   useEffect(() => {
     localStorage.setItem('tasks', JSON.stringify(tasks));
   }, [tasks]);
 
-  // Notes State
+
   const [notes, setNotes] = useState(() => {
     const saved = localStorage.getItem('notes');
     return saved ? JSON.parse(saved) : [];
@@ -62,7 +60,7 @@ function App() {
         const isCompleting = !task.completed;
         if (isCompleting) {
           triggerCelebration();
-          // Show alert after a brief delay to let confetti start
+
           setTimeout(() => {
 
             setShowCelebrationModal(true);
@@ -79,6 +77,10 @@ function App() {
   };
 
   const [showCelebrationModal, setShowCelebrationModal] = useState(false);
+
+  const editNote = (updatedNote) => {
+    setNotes(notes.map(note => note.id === updatedNote.id ? updatedNote : note));
+  };
 
   return (
     <Layout>
@@ -116,7 +118,7 @@ function App() {
       </div>
 
       {view === 'notes' ? (
-        <Notes notes={notes} onAddNote={addNote} onDeleteNote={deleteNote} />
+        <Notes notes={notes} onAddNote={addNote} onDeleteNote={deleteNote} onEditNote={editNote} />
       ) : (
         <>
           <TaskInput onAddTask={addTask} />
