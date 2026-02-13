@@ -10,15 +10,10 @@ import confetti from 'canvas-confetti';
 function App() {
 
   const [tasks, setTasks] = useState(() => {
-
     const saved = localStorage.getItem('tasks');
     if (saved) {
       try {
-        const parsed = JSON.parse(saved);
-        if (parsed.length > 0 && !parsed[0].duration) {
-          return [];
-        }
-        return parsed;
+        return JSON.parse(saved);
       } catch (e) {
         return [];
       }
